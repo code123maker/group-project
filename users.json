@@ -118,6 +118,71 @@
                 "risk_score": 55,
                 "risk_category": "Red",
                 "diabetes_probability": 99.66
+            },
+            {
+                "age": 25,
+                "bmi": 30.0,
+                "HbA1c_level": 6.0,
+                "blood_glucose_level": 150,
+                "hypertension": 1,
+                "heart_disease": 0,
+                "smoking_history": "never",
+                "gender": "Male",
+                "risk_score": 15,
+                "risk_category": "Green",
+                "diabetes_probability": 2.01
+            },
+            {
+                "age": 21,
+                "bmi": 30.0,
+                "HbA1c_level": 4.0,
+                "blood_glucose_level": 120,
+                "hypertension": 1,
+                "heart_disease": 1,
+                "smoking_history": "former",
+                "gender": "Male",
+                "risk_score": 35,
+                "risk_category": "Yellow",
+                "diabetes_probability": 1.4
+            },
+            {
+                "age": 21,
+                "bmi": 30.0,
+                "HbA1c_level": 8.0,
+                "blood_glucose_level": 120,
+                "hypertension": 1,
+                "heart_disease": 1,
+                "smoking_history": "former",
+                "gender": "Male",
+                "risk_score": 60,
+                "risk_category": "Red",
+                "diabetes_probability": 99.67
+            },
+            {
+                "age": 21,
+                "bmi": 25.0,
+                "HbA1c_level": 4.0,
+                "blood_glucose_level": 150,
+                "hypertension": 1,
+                "heart_disease": 1,
+                "smoking_history": "former",
+                "gender": "Male",
+                "risk_score": 35,
+                "risk_category": "Yellow",
+                "diabetes_probability": 1.4
+            },
+            {
+                "age": 1,
+                "bmi": 10.0,
+                "HbA1c_level": 3.0,
+                "blood_glucose_level": 50,
+                "hypertension": 0,
+                "heart_disease": 0,
+                "smoking_history": "never",
+                "gender": "Male",
+                "risk_score": 0,
+                "risk_category": "Green",
+                "diabetes_probability": 1.4
             }
         ],
         "primary": true

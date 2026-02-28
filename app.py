@@ -21,6 +21,14 @@ from auth import (
     load_session,
     clear_session
 )
+from intervention_engine import generate_personal_plan
+from advanced_intervention_engine import (
+    calculate_bmr,
+    estimate_body_fat,
+    protein_target,
+    generate_weekly_workout,
+    ramadan_adjustment
+)
 
 
 # ---------------- AUTH SESSION ----------------
@@ -167,7 +175,11 @@ with col_logout:
         st.rerun()
 
 # ================= MAIN TABS =================
-tab1, tab2 = st.tabs(["🩺 Health Check", "📈 My History"])
+tab1, tab2, tab3 = st.tabs([
+    "🩺 Health Check",
+    "📈 My History",
+    "🧠 AI Health Plan"
+])
 
 with tab1:
     st.markdown("## 🧾 Patient Health Profile")
@@ -257,29 +269,6 @@ with tab1:
             [{"Risk Factor": k, "Impact Level": v} for k, v in shap_drivers.items()]
         )
 
-        st.subheader("🩺 What Can Reduce This Risk?")
-
-        recommendations = []
-
-        if HbA1c_level > 6.5:
-            recommendations.append("Lower HbA1c through diet control and medication")
-
-        if bmi > 30:
-            recommendations.append("Weight reduction through guided exercise")
-
-        if blood_glucose_level > 140:
-            recommendations.append("Regular glucose monitoring")
-
-        if smoking_history != "never":
-            recommendations.append("Smoking cessation program")
-
-        if hypertension == 1:
-            recommendations.append("Blood pressure management")
-
-        for r in recommendations:
-            st.write("•", r)
-
-
         # ---------------- USER DATA ----------------
         user_data = {
             "age": age,
@@ -310,6 +299,7 @@ with tab1:
         # ---------------- DIABETES ML ----------------#
         from models.ml_diabetes_predict import predict_diabetes_full
         diab_pred, diab_prob, shap_info, warnings = predict_diabetes_full(user_data)
+        plan = generate_personal_plan(user_data, final_color, diab_prob)
 
         # 🔍 Transparency for judges (debug / demo mode)
         st.caption(f"🧪 Calibrated ML Probability: {diab_prob:.2f}%")
@@ -372,6 +362,7 @@ with tab1:
             add_health_record(st.session_state.current_user, record)
 
         st.subheader("🧠 Why the Model Flagged This Risk")
+
 
 
         # =====================================================
@@ -536,6 +527,95 @@ with tab2:
 
                 st.markdown("### 📋 Full History")
                 st.dataframe(history)
+with tab3:
+
+    st.markdown("## 🧠 Advanced AI Health Optimization System")
+
+    history = get_user_history(st.session_state.current_user)
+
+    if not history:
+        st.info("Run a health check first.")
+    else:
+
+        latest = history[-1]
+
+        user_data = {
+            "age": latest["age"],
+            "bmi": latest["bmi"],
+            "gender": 1 if latest["gender"] == "Male" else 0
+        }
+
+        bmr = calculate_bmr(user_data)
+        body_fat = estimate_body_fat(user_data)
+
+        weight = latest["bmi"] * (1.7 ** 2)
+        protein = protein_target(weight)
+
+        st.subheader("📊 Metabolic Analysis")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("BMR (kcal/day)", bmr)
+
+        with col2:
+            st.metric("Estimated Body Fat %", body_fat)
+
+        with col3:
+            st.metric("Daily Protein Target (g)", protein)
+
+        st.subheader("🏋 Weekly Workout Plan")
+
+        workout = generate_weekly_workout(
+            latest["risk_category"],
+            latest["heart_disease"]
+        )
+
+        for day, plan in workout.items():
+            st.write(f"**{day}:** {plan}")
+
+        st.subheader("🌙 Ramadan Mode")
+
+        ramadan = ramadan_adjustment()
+
+        for key, value in ramadan.items():
+            st.write(f"**{key}:** {value}")
+        # Rebuild user_data from latest record
+    user_data = {
+        "age": latest["age"],
+        "bmi": latest["bmi"],
+        "HbA1c_level": latest["HbA1c_level"],
+        "blood_glucose_level": latest["blood_glucose_level"],
+        "hypertension": latest["hypertension"],
+        "heart_disease": latest["heart_disease"],
+        "smoking_history": 0 if latest["smoking_history"] == "never" else 1,
+        "gender": 1 if latest["gender"] == "Male" else 0
+    }
+
+    final_color = latest["risk_category"]
+    diab_prob = latest["diabetes_probability"]
+
+    plan = generate_personal_plan(user_data, final_color, diab_prob)
+
+    st.subheader("🧠 Personalized AI Health Plan")
+
+    st.markdown("### 🥗 Diet Plan")
+    for d in plan["diet"]:
+        st.write("•", d)
+
+    st.markdown("### 🏃 Exercise Plan")
+    for e in plan["exercise"]:
+        st.write("•", e)
+
+    st.markdown("### 🧘 Yoga Plan")
+    for y in plan["yoga"]:
+        st.write("•", y)
+
+    if plan["precautions"]:
+        st.markdown("### ⚠ Precautions")
+        for p in plan["precautions"]:
+            st.write("•", p)
+
 
 # ---------------- FOOTER ----------------
 st.caption(
