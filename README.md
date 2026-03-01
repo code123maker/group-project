@@ -1,4 +1,8 @@
 🛡️ HealthGuard AI
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![ML](https://img.shields.io/badge/ML-XGBoost-orange)
+![Explainability](https://img.shields.io/badge/Explainable-SHAP-purple)
 
 Preventive Health Risk & Diabetes Clinical Decision Support System
 Hackathon Project | AI for Healthcare | Clinical-Grade Risk Intelligence Platform
